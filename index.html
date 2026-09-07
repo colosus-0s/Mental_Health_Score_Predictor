@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mental Health Score Predictor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-inner">
+    <div class="brand">
+      <span class="brand-title">Mental Health Score Predictor</span>
+      <span class="brand-subtitle">AI-powered behavioral wellness assessment</span>
+    </div>
+    <div class="header-status-group">
+      <div class="model-status" id="modelStatus" aria-live="polite">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">AI Model Online</span>
+      </div>
+      <span class="model-tag">Random Forest</span>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <span class="hero-label">AI-Powered Assessment</span>
+      <h1 class="hero-heading">Understand your behavioral wellness</h1>
+      <p class="hero-desc">Answer a few questions about your daily habits and receive an AI-generated behavioral score.</p>
+    </div>
+    <svg class="hero-graphic" viewBox="0 0 180 100" aria-hidden="true">
+      <line x1="10" y1="82" x2="10" y2="46" class="hg-bar"></line>
+      <line x1="32" y1="82" x2="32" y2="22" class="hg-bar"></line>
+      <line x1="54" y1="82" x2="54" y2="58" class="hg-bar"></line>
+      <line x1="76" y1="82" x2="76" y2="32" class="hg-bar"></line>
+      <line x1="98" y1="82" x2="98" y2="62" class="hg-bar"></line>
+      <path d="M118 40 L138 56 L158 24" class="hg-line"></path>
+      <circle cx="118" cy="40" r="4" class="hg-dot"></circle>
+      <circle cx="138" cy="56" r="4" class="hg-dot"></circle>
+      <circle cx="158" cy="24" r="4" class="hg-dot"></circle>
+    </svg>
+  </div>
+</section>
+
+<main class="workspace">
+  <form class="workspace-grid" id="predictionForm" novalidate>
+
+    <section class="panel panel-inputs" aria-label="Assessment inputs">
+      <h2 class="panel-title">Your Profile &amp; Habits</h2>
+
+      <div class="input-group">
+        <div class="group-heading">
+          <span class="group-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20"><circle cx="10" cy="6.5" r="3.2"></circle><path d="M3.5 17c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6"></path></svg>
+          </span>
+          <span>About you</span>
+          <i></i>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" min="10" max="100" step="1" required>
+            <span class="field-error" id="age-error"></span>
+          </div>
+          <div class="field">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+              <option value="" disabled selected>Select&hellip;</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            <span class="field-error" id="gender-error"></span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="country">Country</label>
+            <select id="country" name="country" required>
+              <option value="" disabled selected>Select&hellip;</option>
+              <option value="India">India</option>
+              <option value="USA">USA</option>
+              <option value="Canada">Canada</option>
+              <option value="Australia">Australia</option>
+              <option value="UK">UK</option>
+              <option value="Germany">Germany</option>
+              <option value="Mexico">Mexico</option>
+              <option value="Turkey">Turkey</option>
+              <option value="France">France</option>
+              <option value="Other">Other</option>
+            </select>
+            <span class="field-error" id="country-error"></span>
+          </div>
+          <div class="field">
+            <label for="academicLevel">Academic level</label>
+            <select id="academicLevel" name="academicLevel" required>
+              <option value="" disabled selected>Select&hellip;</option>
+              <option value="High School">High School</option>
+              <option value="Undergraduate">Undergraduate</option>
+              <option value="Graduate">Graduate</option>
+            </select>
+            <span class="field-error" id="academicLevel-error"></span>
+          </div>
+        </div>
+        <div class="field-row" id="countryOtherRow" hidden>
+          <div class="field field-wide">
+            <label for="countryOther">Your country</label>
+            <input type="text" id="countryOther" name="countryOther" placeholder="e.g. Brazil" maxlength="60">
+            <span class="field-hint">Grouped as "Other" by the model &mdash; kept here for your own record.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="group-heading">
+          <span class="group-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20"><rect x="6" y="2" width="8" height="16" rx="1.6"></rect><line x1="10" y1="14.3" x2="10" y2="14.3"></line></svg>
+          </span>
+          <span>Social habits</span>
+          <i></i>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="platform">Most-used platform</label>
+            <select id="platform" name="platform" required>
+              <option value="" disabled selected>Select&hellip;</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Snapchat">Snapchat</option>
+              <option value="Twitter">Twitter</option>
+              <option value="YouTube">YouTube</option>
+              <option value="TikTok">TikTok</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="LINE">LINE</option>
+              <option value="KakaoTalk">KakaoTalk</option>
+              <option value="VKontakte">VKontakte</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="WeChat">WeChat</option>
+            </select>
+            <span class="field-error" id="platform-error"></span>
+          </div>
+          <div class="field">
+            <label for="purpose">Main purpose</label>
+            <select id="purpose" name="purpose" required>
+              <option value="" disabled selected>Select&hellip;</option>
+              <option value="Networking">Networking</option>
+              <option value="Education">Education</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="News">News</option>
+            </select>
+            <span class="field-error" id="purpose-error"></span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="dailyUsage">Daily usage (hours)</label>
+            <input type="number" id="dailyUsage" name="dailyUsage" min="0" max="24" step="0.1" required>
+            <span class="field-error" id="dailyUsage-error"></span>
+          </div>
+          <div class="field">
+            <label for="dailyUnlocks">Daily unlocks</label>
+            <input type="number" id="dailyUnlocks" name="dailyUnlocks" min="0" step="1" required>
+            <span class="field-error" id="dailyUnlocks-error"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="group-heading">
+          <span class="group-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5"></circle><path d="M10 5.5V10l3 2"></path></svg>
+          </span>
+          <span>Daily routine</span>
+          <i></i>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="studyHours">Study hours</label>
+            <input type="number" id="studyHours" name="studyHours" min="0" max="24" step="0.1" required>
+            <span class="field-error" id="studyHours-error"></span>
+          </div>
+          <div class="field">
+            <label for="activityHours">Physical activity (h)</label>
+            <input type="number" id="activityHours" name="activityHours" min="0" max="24" step="0.1" required>
+            <span class="field-error" id="activityHours-error"></span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="sleepHours">Sleep per night (h)</label>
+            <input type="number" id="sleepHours" name="sleepHours" min="0" max="24" step="0.1" required>
+            <span class="field-error" id="sleepHours-error"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="group-heading">
+          <span class="group-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20"><path d="M2.5 11 6 11l1.6-4.5L10.5 15 12.3 11H17.5"></path></svg>
+          </span>
+          <span>Stress</span>
+          <i></i>
+        </div>
+        <div class="field-row">
+          <div class="field field-wide">
+            <label for="stressLevel">Current stress level</label>
+            <select id="stressLevel" name="stressLevel" required>
+              <option value="" disabled selected>Select&hellip;</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Very High">Very High</option>
+            </select>
+            <span class="field-error" id="stressLevel-error"></span>
+          </div>
+        </div>
+      </div>
+
+      <p class="form-error" id="formError" role="alert" hidden></p>
+
+      <button type="submit" id="submitBtn" class="btn-run">
+        <span class="btn-label">Calculate My Score &#8594;</span>
+        <span class="btn-spinner" hidden></span>
+      </button>
+
+    </section>
+
+    <aside class="panel panel-live" aria-label="Live assessment">
+
+      <div class="live-header">
+        <span class="live-label">Live Assessment</span>
+        <span class="live-caption" id="liveCaption">Complete the inputs to generate your behavioral score.</span>
+      </div>
+
+      <div class="score-ring-wrap">
+        <svg viewBox="0 0 200 200" class="score-ring" id="scoreRing" aria-hidden="true">
+          <circle class="ring-track" cx="100" cy="100" r="86"></circle>
+          <circle class="ring-progress" id="ringProgress" cx="100" cy="100" r="86"></circle>
+        </svg>
+        <div class="score-center">
+          <span class="score-value" id="scoreValue">&ndash;&ndash;</span>
+          <span class="score-scale">/ 10</span>
+          <span class="score-caption" id="scoreCaption">Awaiting input</span>
+        </div>
+      </div>
+
+      <div class="score-interpretation" id="scoreInterpretation" hidden>
+        <span class="score-interp-badge" id="scoreInterpBadge">Moderate</span>
+        <span class="score-interp-note">Model-generated behavioral estimate</span>
+      </div>
+
+      <div class="error-inline" id="errorInline" hidden>
+        <p class="error-title" id="errorTitle">Prediction service unavailable</p>
+        <p class="error-text" id="errorText">Make sure the FastAPI server is running on port 8000 and try again.</p>
+        <button type="button" class="btn-secondary" id="errorRetryBtn">Try again</button>
+      </div>
+
+      <div class="tracker-grid" id="trackerGrid">
+        <div class="tracker-chip">
+          <span class="tracker-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M14.5 11.5A6 6 0 0 1 8.5 3 6.5 6.5 0 1 0 14.5 11.5Z"></path></svg></span>
+          <span class="tracker-label">Sleep</span>
+          <span class="tracker-value" id="trackSleep">&mdash;</span>
+        </div>
+        <div class="tracker-chip">
+          <span class="tracker-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M3 4.5h6a2 2 0 0 1 2 2v9a2 2 0 0 0-2-1.5H3Z"></path><path d="M17 4.5h-6a2 2 0 0 0-2 2v9a2 2 0 0 1 2-1.5h6Z"></path></svg></span>
+          <span class="tracker-label">Study</span>
+          <span class="tracker-value" id="trackStudy">&mdash;</span>
+        </div>
+        <div class="tracker-chip">
+          <span class="tracker-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M2 10.5h3.2l1.6-4.5 2.7 8.5 1.8-6 1.2 2h5.5"></path></svg></span>
+          <span class="tracker-label">Activity</span>
+          <span class="tracker-value" id="trackActivity">&mdash;</span>
+        </div>
+        <div class="tracker-chip">
+          <span class="tracker-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M3 4h14v8H8l-3.5 3V12H3Z"></path></svg></span>
+          <span class="tracker-label">Social usage</span>
+          <span class="tracker-value" id="trackUsage">&mdash;</span>
+        </div>
+        <div class="tracker-chip">
+          <span class="tracker-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="6" y="2" width="8" height="16" rx="1.6"></rect><line x1="10" y1="14.3" x2="10" y2="14.3"></line></svg></span>
+          <span class="tracker-label">Unlocks</span>
+          <span class="tracker-value" id="trackUnlocks">&mdash;</span>
+        </div>
+        <div class="tracker-chip">
+          <span class="tracker-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M2.5 11 6 11l1.6-4.5L10.5 15 12.3 11H17.5"></path></svg></span>
+          <span class="tracker-label">Stress</span>
+          <span class="tracker-value" id="trackStress">&mdash;</span>
+        </div>
+      </div>
+
+      <div class="breakdown">
+        <span class="breakdown-label">Your inputs at a glance</span>
+
+        <div class="breakdown-row">
+          <span class="breakdown-name">Sleep</span>
+          <div class="breakdown-track"><div class="breakdown-fill" id="fillSleep"></div></div>
+          <span class="breakdown-percent" id="fillSleepPercent">0%</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-name">Study</span>
+          <div class="breakdown-track"><div class="breakdown-fill" id="fillStudy"></div></div>
+          <span class="breakdown-percent" id="fillStudyPercent">0%</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-name">Activity</span>
+          <div class="breakdown-track"><div class="breakdown-fill" id="fillActivity"></div></div>
+          <span class="breakdown-percent" id="fillActivityPercent">0%</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-name">Social</span>
+          <div class="breakdown-track"><div class="breakdown-fill" id="fillUsage"></div></div>
+          <span class="breakdown-percent" id="fillUsagePercent">0%</span>
+        </div>
+      </div>
+
+      <div class="model-info">
+        <div class="model-info-item">
+          <span class="model-info-label">Model</span>
+          <span class="model-info-value">Random Forest</span>
+        </div>
+        <div class="model-info-item">
+          <span class="model-info-label">Inputs</span>
+          <span class="model-info-value">12 behavioral factors</span>
+        </div>
+        <div class="model-info-item">
+          <span class="model-info-label">Output</span>
+          <span class="model-info-value">Predicted behavioral score</span>
+        </div>
+      </div>
+
+      <p class="disclaimer">This score is a model-generated estimate based on the information entered. It is not a medical diagnosis.</p>
+
+      <div class="result-actions" id="resultActions" hidden>
+        <button type="button" class="btn-secondary" id="recalcBtn">Recalculate</button>
+        <button type="button" class="btn-secondary" id="resetBtn">Reset</button>
+      </div>
+
+    </aside>
+
+  </form>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
