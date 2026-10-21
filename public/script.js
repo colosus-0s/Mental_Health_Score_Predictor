@@ -7,71 +7,84 @@
    ========================================================================== */
 
 /* ---------- 1. DOM references ---------- */
-const API_BASE="http://127.0.0.1:8000"
-const form          = document.getElementById("predictionForm");
-const submitBtn     = document.getElementById("submitBtn");
-const btnLabel      = submitBtn.querySelector(".btn-label");
-const btnSpinner    = submitBtn.querySelector(".btn-spinner");
-const formErrorEl   = document.getElementById("formError");
+const API_BASE = "http://127.0.0.1:8000";
+const form = document.getElementById("predictionForm");
+const submitBtn = document.getElementById("submitBtn");
+const btnLabel = submitBtn.querySelector(".btn-label");
+const btnSpinner = submitBtn.querySelector(".btn-spinner");
+const formErrorEl = document.getElementById("formError");
 
-const statusDot     = document.getElementById("statusDot");
-const statusText    = document.getElementById("statusText");
+const statusDot = document.getElementById("statusDot");
+const statusText = document.getElementById("statusText");
 
-const countrySelect     = document.getElementById("country");
-const countryOtherRow   = document.getElementById("countryOtherRow");
+const countrySelect = document.getElementById("country");
+const countryOtherRow = document.getElementById("countryOtherRow");
 const countryOtherInput = document.getElementById("countryOther");
 
-const liveCaption   = document.getElementById("liveCaption");
-const scoreValueEl  = document.getElementById("scoreValue");
-const scoreCaption  = document.getElementById("scoreCaption");
-const ringProgress  = document.getElementById("ringProgress");
+const liveCaption = document.getElementById("liveCaption");
+const scoreValueEl = document.getElementById("scoreValue");
+const scoreCaption = document.getElementById("scoreCaption");
+const ringProgress = document.getElementById("ringProgress");
 
-const interpEl       = document.getElementById("scoreInterpretation");
-const interpBadgeEl  = document.getElementById("scoreInterpBadge");
+const interpEl = document.getElementById("scoreInterpretation");
+const interpBadgeEl = document.getElementById("scoreInterpBadge");
 
-const errorInline    = document.getElementById("errorInline");
-const errorTitleEl   = document.getElementById("errorTitle");
-const errorTextEl    = document.getElementById("errorText");
-const errorRetryBtn  = document.getElementById("errorRetryBtn");
+const errorInline = document.getElementById("errorInline");
+const errorTitleEl = document.getElementById("errorTitle");
+const errorTextEl = document.getElementById("errorText");
+const errorRetryBtn = document.getElementById("errorRetryBtn");
 
-const resultActions  = document.getElementById("resultActions");
-const recalcBtn      = document.getElementById("recalcBtn");
-const resetBtn       = document.getElementById("resetBtn");
+const resultActions = document.getElementById("resultActions");
+const recalcBtn = document.getElementById("recalcBtn");
+const resetBtn = document.getElementById("resetBtn");
 
-const trackSleep    = document.getElementById("trackSleep");
-const trackStudy    = document.getElementById("trackStudy");
+const trackSleep = document.getElementById("trackSleep");
+const trackStudy = document.getElementById("trackStudy");
 const trackActivity = document.getElementById("trackActivity");
-const trackUsage    = document.getElementById("trackUsage");
-const trackUnlocks  = document.getElementById("trackUnlocks");
-const trackStress   = document.getElementById("trackStress");
+const trackUsage = document.getElementById("trackUsage");
+const trackUnlocks = document.getElementById("trackUnlocks");
+const trackStress = document.getElementById("trackStress");
 
-const fillSleep    = document.getElementById("fillSleep");
-const fillStudy    = document.getElementById("fillStudy");
+const fillSleep = document.getElementById("fillSleep");
+const fillStudy = document.getElementById("fillStudy");
 const fillActivity = document.getElementById("fillActivity");
-const fillUsage    = document.getElementById("fillUsage");
+const fillUsage = document.getElementById("fillUsage");
 
-const fillSleepPercent    = document.getElementById("fillSleepPercent");
-const fillStudyPercent    = document.getElementById("fillStudyPercent");
+const fillSleepPercent = document.getElementById("fillSleepPercent");
+const fillStudyPercent = document.getElementById("fillStudyPercent");
 const fillActivityPercent = document.getElementById("fillActivityPercent");
-const fillUsagePercent    = document.getElementById("fillUsagePercent");
+const fillUsagePercent = document.getElementById("fillUsagePercent");
 
 /* ---------- 2. Configuration ---------- */
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:8000"
+    : "";
 const SCORE_SCALE_MAX = 10;
 const RING_CIRCUMFERENCE = 540.35;
 const HOUR_FIELD_MAX = 24;
-const REDUCE_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const REDUCE_MOTION = window.matchMedia(
+  "(prefers-reduced-motion: reduce)",
+).matches;
 
 const NUMERIC_RULES = {
-  age:            { min: 10, max: 100, integer: true },
-  dailyUsage:     { min: 0,  max: 24,  integer: false },
-  dailyUnlocks:   { min: 0,  max: null, integer: true },
-  studyHours:     { min: 0,  max: 24,  integer: false },
-  activityHours:  { min: 0,  max: 24,  integer: false },
-  sleepHours:     { min: 0,  max: 24,  integer: false },
+  age: { min: 10, max: 100, integer: true },
+  dailyUsage: { min: 0, max: 24, integer: false },
+  dailyUnlocks: { min: 0, max: null, integer: true },
+  studyHours: { min: 0, max: 24, integer: false },
+  activityHours: { min: 0, max: 24, integer: false },
+  sleepHours: { min: 0, max: 24, integer: false },
 };
 
-const REQUIRED_SELECTS = ["gender", "country", "academicLevel", "platform", "purpose", "stressLevel"];
+const REQUIRED_SELECTS = [
+  "gender",
+  "country",
+  "academicLevel",
+  "platform",
+  "purpose",
+  "stressLevel",
+];
 
 /* ---------- 3. Input handling ---------- */
 countrySelect.addEventListener("change", () => {
@@ -79,9 +92,10 @@ countrySelect.addEventListener("change", () => {
 });
 
 function getFormData() {
-  const countryValue = countrySelect.value === "Other" && countryOtherInput.value.trim()
-    ? countryOtherInput.value.trim()
-    : countrySelect.value;
+  const countryValue =
+    countrySelect.value === "Other" && countryOtherInput.value.trim()
+      ? countryOtherInput.value.trim()
+      : countrySelect.value;
 
   return {
     age: document.getElementById("age").value,
@@ -108,25 +122,28 @@ function formatHours(raw) {
 
 function updateBar(fillEl, percentEl, raw, max) {
   const value = Number(raw);
-  const percent = raw === "" || Number.isNaN(value) ? 0 : Math.max(0, Math.min(100, (value / max) * 100));
+  const percent =
+    raw === "" || Number.isNaN(value)
+      ? 0
+      : Math.max(0, Math.min(100, (value / max) * 100));
   fillEl.style.width = percent + "%";
   if (percentEl) percentEl.textContent = Math.round(percent) + "%";
 }
 
 function refreshTracker() {
-  const sleep    = document.getElementById("sleepHours").value;
-  const study    = document.getElementById("studyHours").value;
+  const sleep = document.getElementById("sleepHours").value;
+  const study = document.getElementById("studyHours").value;
   const activity = document.getElementById("activityHours").value;
-  const usage    = document.getElementById("dailyUsage").value;
-  const unlocks  = document.getElementById("dailyUnlocks").value;
-  const stress   = document.getElementById("stressLevel").value;
+  const usage = document.getElementById("dailyUsage").value;
+  const unlocks = document.getElementById("dailyUnlocks").value;
+  const stress = document.getElementById("stressLevel").value;
 
-  trackSleep.textContent    = formatHours(sleep);
-  trackStudy.textContent    = formatHours(study);
+  trackSleep.textContent = formatHours(sleep);
+  trackStudy.textContent = formatHours(study);
   trackActivity.textContent = formatHours(activity);
-  trackUsage.textContent    = formatHours(usage);
-  trackUnlocks.textContent  = unlocks === "" ? "\u2014" : unlocks;
-  trackStress.textContent   = stress === "" ? "\u2014" : stress;
+  trackUsage.textContent = formatHours(usage);
+  trackUnlocks.textContent = unlocks === "" ? "\u2014" : unlocks;
+  trackStress.textContent = stress === "" ? "\u2014" : stress;
 
   updateBar(fillSleep, fillSleepPercent, sleep, HOUR_FIELD_MAX);
   updateBar(fillStudy, fillStudyPercent, study, HOUR_FIELD_MAX);
@@ -134,10 +151,18 @@ function refreshTracker() {
   updateBar(fillUsage, fillUsagePercent, usage, HOUR_FIELD_MAX);
 }
 
-["sleepHours", "studyHours", "activityHours", "dailyUsage", "dailyUnlocks"].forEach((id) => {
+[
+  "sleepHours",
+  "studyHours",
+  "activityHours",
+  "dailyUsage",
+  "dailyUnlocks",
+].forEach((id) => {
   document.getElementById(id).addEventListener("input", refreshTracker);
 });
-document.getElementById("stressLevel").addEventListener("change", refreshTracker);
+document
+  .getElementById("stressLevel")
+  .addEventListener("change", refreshTracker);
 
 /* ---------- 5. Validation ---------- */
 function setFieldError(fieldId, message) {
@@ -156,9 +181,18 @@ function clearFieldError(fieldId) {
 
 function clearAllErrors() {
   const allFieldIds = [
-    "age", "gender", "country", "academicLevel",
-    "platform", "purpose", "dailyUsage", "dailyUnlocks",
-    "studyHours", "activityHours", "sleepHours", "stressLevel",
+    "age",
+    "gender",
+    "country",
+    "academicLevel",
+    "platform",
+    "purpose",
+    "dailyUsage",
+    "dailyUnlocks",
+    "studyHours",
+    "activityHours",
+    "sleepHours",
+    "stressLevel",
   ];
   allFieldIds.forEach(clearFieldError);
   formErrorEl.hidden = true;
@@ -196,7 +230,8 @@ function validateForm() {
       return;
     }
     if (value < rule.min || (rule.max !== null && value > rule.max)) {
-      const rangeText = rule.max !== null ? `${rule.min}\u2013${rule.max}` : `${rule.min}+`;
+      const rangeText =
+        rule.max !== null ? `${rule.min}\u2013${rule.max}` : `${rule.min}+`;
       setFieldError(fieldId, `Range: ${rangeText}.`);
       isValid = false;
     }
@@ -265,10 +300,10 @@ function hideLoading() {
 
 /* ---------- 8. Result rendering ---------- */
 function getInterpretation(score) {
-  if (score < 3)   return { label: "Needs Attention", cls: "attention" };
-  if (score < 5)   return { label: "Below Average",   cls: "below" };
-  if (score < 7)   return { label: "Moderate",        cls: "moderate" };
-  if (score < 8.5) return { label: "Good",            cls: "good" };
+  if (score < 3) return { label: "Needs Attention", cls: "attention" };
+  if (score < 5) return { label: "Below Average", cls: "below" };
+  if (score < 7) return { label: "Moderate", cls: "moderate" };
+  if (score < 8.5) return { label: "Good", cls: "good" };
   return { label: "Excellent", cls: "excellent" };
 }
 
@@ -316,7 +351,8 @@ function describeError(error) {
   if (!error.status) {
     return {
       title: "Prediction service unavailable",
-      message: "Make sure the FastAPI server is running on port 8000 and try again.",
+      message:
+        "Make sure the FastAPI server is running on port 8000 and try again.",
     };
   }
   if (error.status === 422) {
@@ -328,7 +364,8 @@ function describeError(error) {
   if (error.status >= 500) {
     return {
       title: "Server error",
-      message: "The prediction server ran into a problem. Please try again in a moment.",
+      message:
+        "The prediction server ran into a problem. Please try again in a moment.",
     };
   }
   return {
@@ -346,7 +383,8 @@ function showError(error) {
   interpEl.hidden = true;
 
   setStatus("error");
-  liveCaption.textContent = "Complete the inputs to generate your behavioral score.";
+  liveCaption.textContent =
+    "Complete the inputs to generate your behavioral score.";
   scoreCaption.textContent = "Connection error";
   scoreValueEl.textContent = "\u2013\u2013";
   ringProgress.style.strokeDashoffset = RING_CIRCUMFERENCE;
@@ -358,7 +396,8 @@ function resetLivePanel() {
   errorInline.hidden = true;
   resultActions.hidden = true;
   interpEl.hidden = true;
-  liveCaption.textContent = "Complete the inputs to generate your behavioral score.";
+  liveCaption.textContent =
+    "Complete the inputs to generate your behavioral score.";
   scoreCaption.textContent = "Awaiting input";
   scoreValueEl.textContent = "\u2013\u2013";
   ringProgress.style.strokeDashoffset = RING_CIRCUMFERENCE;
@@ -376,7 +415,9 @@ function resetForm() {
 }
 
 recalcBtn.addEventListener("click", () => {
-  document.querySelector(".panel-inputs").scrollIntoView({ behavior: "smooth", block: "start" });
+  document
+    .querySelector(".panel-inputs")
+    .scrollIntoView({ behavior: "smooth", block: "start" });
   document.getElementById("age").focus();
 });
 
@@ -386,7 +427,9 @@ errorRetryBtn.addEventListener("click", () => {
   errorInline.hidden = true;
   setStatus("ready");
   scoreCaption.textContent = "Awaiting input";
-  document.querySelector(".panel-inputs").scrollIntoView({ behavior: "smooth", block: "start" });
+  document
+    .querySelector(".panel-inputs")
+    .scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 /* ---------- Submit ---------- */

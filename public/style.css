@@ -96,7 +96,7 @@ fieldset { border: none; margin: 0; padding: 0; }
 
 .brand-title {
   font-family: var(--font-serif);
-  font-size: 1.2rem;
+  font-size: 2.4rem;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -250,7 +250,7 @@ fieldset { border: none; margin: 0; padding: 0; }
 .panel-title {
   font-size: 1.05rem;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 .panel-live {
@@ -267,7 +267,7 @@ fieldset { border: none; margin: 0; padding: 0; }
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 
 .group-icon {
@@ -466,8 +466,8 @@ fieldset { border: none; margin: 0; padding: 0; }
 /* ---------- Score ring ---------- */
 .score-ring-wrap {
   position: relative;
-  width: 190px;
-  height: 190px;
+  width: 250px;
+  height: 250px;
   margin: 4px auto 14px;
 }
 
@@ -733,7 +733,7 @@ fieldset { border: none; margin: 0; padding: 0; }
   .panel-inputs, .panel-live { padding: 20px 18px 22px; }
   .app-header-inner { padding: 14px 18px; }
   .hero-inner { padding: 24px 18px 26px; }
-  .score-ring-wrap { width: 165px; height: 165px; }
+  .score-ring-wrap { width: 265px; height: 265px; }
   .breakdown-row { grid-template-columns: 46px 1fr 30px; }
 }
 
@@ -749,4 +749,9 @@ fieldset { border: none; margin: 0; padding: 0; }
   .status-dot.busy { animation: none; }
   .btn-spinner { animation-duration: 1.4s; }
   .score-interpretation { animation: none; }
+}
+
+/* Hide the header status badges */
+.header-status-group {
+  display: none;
 }
